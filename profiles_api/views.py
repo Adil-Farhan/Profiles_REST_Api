@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import viewsets
 
 from profiles_api import serializers
 
@@ -48,3 +49,49 @@ class HelloApiView(APIView):
     def delete(self,request,pk = None ):
         """Delete the object """
         return Response({'method':'DELETE'})
+
+class HelloViewSets(viewsets.ViewSet):
+    """Test Api View Set"""
+
+    serializer_class = serializers  .HelloSerializers
+
+    def list(self,request):
+        """Returnds a list"""
+        a_viewList = [
+        'Uses http method as a function (get, post, patch, delete,put)',
+        'Is smilar to traditional  Djaongo View',
+        'Give you the most control over application logic',
+        'Is mapped manually to URLS',
+        ]
+
+        return Response({'message':'Hello','a_viewList':a_viewList})
+
+
+    def create(self,request):
+        """Create a new hello message"""
+        serializer =  self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            message = 'Helloo ' + name + ' !'
+            return Response({'message':message })
+        else:
+            return Response(
+            serializer.errors,
+            status = status.HTTP_400_BAD_REQUEST
+            )
+
+    def retrieve(self,request,pk=None):
+        """ Handle getting object by Id"""
+        return Response({'http_method':'GET'})
+
+    def update(self,request,pk=None):
+        """ Handle UPDATING object by Id"""
+        return Response({'http_method':'UPDATE'})
+
+    def partial_update(self,request,pk=None):
+        """ Handle partial update object by Id"""
+        return Response({'http_method':'PATCH'})
+
+    def destroy(self,request,pk=None):
+        """ Handle destroy update object by Id"""
+        return Response({'http_method':'DELETE'})
